@@ -1,19 +1,35 @@
-import React from 'react'
+import React, {useEffect, useState} from 'react'
+import {API_KEY,imageUrl} from '../../constants/constants'
+import axios from '../../axios'
 import "./Banner.css"
 
 function Banner() {
-  return (
-    <div className='banner'>
+   const [movie,setMovie] = useState()
+   useEffect(() => {
+     axios.get(`trending/all/week?api_key=${API_KEY}&language=en-US`).then((response)=>{
+        const results = response.data.results;
+        console.log(results)
+       
+        // Select a random movie from the results
+        if (results.length > 0) {
+            const randomIndex = Math.floor(Math.random() * results.length);
+            setMovie(results[randomIndex]); // Set the random movie
+          }
+     })
+   }, [])
+   
+   return (
+  <div 
+  style={{backgroundImage: `url(${movie ? imageUrl+ movie.backdrop_path : ""})`}}
+  className='banner'>
       <div className='content'>
-        <h1 className='title'>Movie Name</h1>
+        <h1 className='title'>{movie ? movie.original_name : ""}</h1>
         <div className='banner_buttons'>
             <button className='button'>Play</button>
             <button className='button'>My List</button>
 
         </div>
-        <h1 className='description'>Contrary to popular belief, Lorem Ipsum is not simply random text.
-             It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old.
-              </h1>
+        <h1 className='description'>{movie ? movie.overview : ""}</h1>
 
       </div>
       <div className="fade_bottom"></div>
